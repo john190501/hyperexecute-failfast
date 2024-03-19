@@ -1,0 +1,62 @@
+---
+version: 0.1
+globalTimeout: 150
+testSuiteTimeout: 150
+testSuiteStep: 150
+
+runson: linux
+
+autosplit: true
+
+retryOnFailure: true
+maxRetries: 1
+
+failFast:
+  maxNumberOfTests: 2
+
+concurrency: 2
+
+shell: bash
+
+env:
+  CACHE_DIR: m2_cache_dir
+
+cacheKey: '{{ checksum "pom.xml" }}'
+cacheDirectories:
+  - .m2
+
+runtime:
+  language: java
+  version: "18"
+
+pre:
+  - mvn -Dmaven.repo.local=./.m2 dependency:resolve
+
+post:
+  - ls target/surefire-reports/
+
+mergeArtifacts: true
+
+uploadArtefacts:
+ - name: ExecutionSnapshots
+   path:
+    - target/surefire-reports/html/**
+
+report: true
+
+partialReports:
+  location: target/surefire-reports/html
+  type: html
+  frameworkName: extent
+  email:
+    to:
+      - johnwick190501@gmail.com
+
+testDiscovery:
+    type: raw
+    mode: dynamic
+    command: grep 'test name' xml/testng_linux.xml | awk '{print$2}' | sed 's/name=//g' | sed 's/\x3e//g' ${param}
+
+testRunnerCommand: mvn test -Dplatname=linux -Dmaven.repo.local=./.m2 dependency:resolve -DselectedTests=$tests
+
+jobLabel: ['Autosplit', 'Fail Fast']
