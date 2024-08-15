@@ -1,0 +1,41 @@
+name: HyperExecute-Failfast
+on:
+  schedule:
+    - cron: "22 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      username:
+        required: true
+        description: LT Username
+      accessKey:
+        description: LT Access Key
+        required: true
+      sampleRepoLink:
+        description: Link to the HyperExecute sample repo
+        default: https://github.com/john190501/hyp-autosplit-2-failfast
+        required: true
+jobs:
+  HyperExecute-Selenium:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Execcuting the Project
+        shell: bash
+        run: |
+          echo "Step 1: Downloading the Sample Project"
+          git clone ${{ github.event.inputs.sampleRepoLink }}
+          echo "Step 2: Download the HyperExecute CLI"
+          cd hyp-autosplit-2-failfast
+          curl https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe -o hyperexecute.exe
+          echo "Step 3: Setting up the Credentials"
+          export LT_USERNAME=${{ github.event.inputs.username }}
+          export LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}
+          echo "Step 4: Execute the Test Suite"
+          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/win/hyp-failfast.yaml
