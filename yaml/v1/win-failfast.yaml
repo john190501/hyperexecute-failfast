@@ -11,9 +11,9 @@ pre:
 testDiscovery:
   type: raw
   mode: dynamic
-  command: grep 'test name' xml/testng_linux.xml | awk '{print$2}' | sed 's/name=//g' | sed 's/>//g'
+  command: grep 'test name' xml/testng_win.xml | awk '{print$2}' | sed 's/name=//g' | sed 's/>//g'
 
-testRunnerCommand: mvn test -Dplatname=linux -DselectedTests=$test
+testRunnerCommand: mvn test -Dplatname=win -DselectedTests=$test
 
 failFast:
   maxNumberOfTests: 2
