@@ -9,6 +9,7 @@ pre:
   - mvn dependency:resolve
 
 testDiscovery:
+  type: automatic
   mode: remote
   command: grep 'test name' xml/testng_linux.xml | awk '{print$2}' | sed 's/name=//g' | sed 's/>//g'
 
