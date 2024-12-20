@@ -18,6 +18,9 @@ framework:
   flags:
     - "-Dplatname=linux"
 
+retryOnFailure: true
+maxRetries: 2
+
 failFast:
   maxNumberOfTests: 2
 

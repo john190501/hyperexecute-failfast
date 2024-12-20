@@ -15,6 +15,9 @@ testDiscovery:
 
 testRunnerCommand: mvn test -Dplatname=linux -DselectedTests=$test
 
+retryOnFailure: true
+maxRetries: 2
+
 failFast:
   maxNumberOfTests: 2
 

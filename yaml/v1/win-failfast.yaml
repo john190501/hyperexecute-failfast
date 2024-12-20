@@ -3,7 +3,7 @@ version: 0.1
 runson: win
 
 autosplit: true
-concurrency: 2
+concurrency: 1
 
 pre:
   - mvn dependency:resolve
@@ -11,9 +11,12 @@ pre:
 testDiscovery:
   type: raw
   mode: dynamic
-  command: grep 'test name' xml/testng_win.xml | awk '{print$2}' | sed 's/name=//g' | sed 's/>//g'
+  command: grep 'test name' xml/testng_win.xml | awk '{print$2}' | sed 's/name=//g' | sed 's/\x3e//g'
 
-testRunnerCommand: mvn test -Dplatname=win -DselectedTests=$test
+testRunnerCommand: mvn test `-Dplatname=win `-DselectedTests=$test
+
+retryOnFailure: true
+maxRetries: 2
 
 failFast:
   maxNumberOfTests: 2

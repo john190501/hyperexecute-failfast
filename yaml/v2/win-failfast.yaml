@@ -15,6 +15,9 @@ framework:
   flags:
     - "-Dplatname=win"
 
+retryOnFailure: true
+maxRetries: 2
+
 failFast:
   maxNumberOfTests: 2
 
