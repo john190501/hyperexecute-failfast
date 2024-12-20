@@ -3,7 +3,7 @@ version: 0.2
 runson: win
 
 autosplit: true
-concurrency: 2
+concurrency: 1
 
 pre:
   # Skip execution of the tests in the pre step
