@@ -1,7 +1,5 @@
 name: HyperExecute-Failfast
 on:
-  schedule:
-    - cron: "22 5 * * 1"
   workflow_dispatch:
     inputs:
       username:
@@ -38,4 +36,4 @@ jobs:
           export LT_USERNAME=${{ github.event.inputs.username }}
           export LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}
           echo "Step 4: Execute the Test Suite"
-          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/win/hyp-failfast.yaml
+          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/v2/win-failfast.yaml

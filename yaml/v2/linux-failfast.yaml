@@ -9,12 +9,6 @@ runtime:
   language: java
   version: "18"
 
-retryOnFailure: true
-maxRetries: 1
-
-failFast:
-  maxNumberOfTests: 2
-
 pre:
   - mvn dependency:resolve
 
@@ -24,4 +18,7 @@ framework:
   flags:
     - "-Dplatname=linux"
 
-jobLabel: ['Autosplit', 'Fail Fast']
+failFast:
+  maxNumberOfTests: 2
+
+jobLabel: ['HyperExecute - Failfast', 'v2', 'linux']

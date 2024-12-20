@@ -5,12 +5,6 @@ runson: win
 autosplit: true
 concurrency: 2
 
-retryOnFailure: true
-maxRetries: 1
-
-failFast:
-  maxNumberOfTests: 2
-
 pre:
   # Skip execution of the tests in the pre step
   - mvn dependency:resolve
@@ -21,4 +15,7 @@ framework:
   flags:
     - "-Dplatname=win"
 
-jobLabel: ['Autosplit', 'Fail Fast']
+failFast:
+  maxNumberOfTests: 2
+
+jobLabel: ['HyperExecute - Failfast', 'v2', 'win']

@@ -1,0 +1,20 @@
+---
+version: 0.1
+runson: win
+
+autosplit: true
+concurrency: 2
+
+pre:
+  - mvn dependency:resolve
+
+testDiscovery:
+  mode: remote
+  command: grep 'test name' xml/testng_linux.xml | awk '{print$2}' | sed 's/name=//g' | sed 's/>//g'
+
+testRunnerCommand: mvn test -Dplatname=linux -DselectedTests=$test
+
+failFast:
+  maxNumberOfTests: 2
+
+jobLabel: ['HyperExecute - Failfast', 'v1', 'win']
