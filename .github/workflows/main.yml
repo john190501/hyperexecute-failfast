@@ -13,11 +13,11 @@ on:
         required: false
       sampleRepoLink:
         description: "Link to the HyperExecute sample repo"
-        default: "https://github.com/john190501/hyp-autosplit-2-failfast"
+        default: "https://github.com/john190501/hyperexecute-failfast"
         required: true
 
 jobs:
-  HyperExecute-Selenium:
+  HyperExecute-Failfast:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     strategy:
@@ -55,7 +55,7 @@ jobs:
           
           echo "Step 2: Download the HyperExecute CLI"
           cd hyp-autosplit-2-failfast
-          curl -o hyperexecute.exe https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
+          curl -o hyperexecute https://downloads.lambdatest.com/hyperexecute/linux/hyperexecute
 
       - name: Execute the Project
         shell: bash
