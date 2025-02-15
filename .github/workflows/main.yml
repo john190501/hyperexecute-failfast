@@ -18,12 +18,8 @@ on:
 
 jobs:
   HyperExecute-Failfast:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ubuntu-latest
 
     steps:
       - name: Checkout sources
@@ -56,6 +52,7 @@ jobs:
           echo "Step 2: Download the HyperExecute CLI"
           cd hyperexecute-failfast
           wget -q https://downloads.lambdatest.com/hyperexecute/linux/hyperexecute
+          chmod +x hyperexecute
 
       - name: Execute the Project
         shell: bash
