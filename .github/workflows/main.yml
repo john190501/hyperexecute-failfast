@@ -30,15 +30,15 @@ jobs:
         run: |
           echo "Setting up credentials..."
           if [ -z "${{ github.event.inputs.username }}" ]; then
-            export LT_USERNAME="${{ secrets.LT_USERNAME }}"
+            echo "LT_USERNAME=${{ secrets.LT_USERNAME }}" >> $GITHUB_ENV
           else
-            export LT_USERNAME="${{ github.event.inputs.username }}"
+            echo "LT_USERNAME=${{ github.event.inputs.username }}" >> $GITHUB_ENV
           fi
 
           if [ -z "${{ github.event.inputs.accessKey }}" ]; then
-            export LT_ACCESS_KEY="${{ secrets.LT_ACCESS_KEY }}"
+            echo "LT_ACCESS_KEY=${{ secrets.LT_ACCESS_KEY }}" >> $GITHUB_ENV
           else
-            export LT_ACCESS_KEY="${{ github.event.inputs.accessKey }}"
+            echo "LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}" >> $GITHUB_ENV
           fi
 
           echo "Credentials set. (Username is masked for security)"
@@ -55,4 +55,4 @@ jobs:
           chmod +x hyperexecute
 
           echo "Step 3: Execute the Test Suite"
-          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
+          ./hyperexecute --user "$LT_USERNAME" --key "$LT_ACCESS_KEY" --config yaml/failfast.yaml
