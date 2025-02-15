@@ -52,10 +52,13 @@ jobs:
           echo "Step 2: Download the HyperExecute CLI"
           cd hyperexecute-failfast
           wget -q https://downloads.lambdatest.com/hyperexecute/linux/hyperexecute
+          pwd
           chmod +x hyperexecute
+          pwd
 
       - name: Execute the Project
         shell: bash
         run: |
           echo "Step 3: Execute the Test Suite"
+          pwd
           ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
