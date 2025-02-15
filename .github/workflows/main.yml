@@ -60,5 +60,6 @@ jobs:
         shell: bash
         run: |
           echo "Step 3: Execute the Test Suite"
+          cd hyperexecute-failfast
           pwd
           ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
