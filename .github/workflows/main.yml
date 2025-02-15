@@ -29,24 +29,21 @@ jobs:
         shell: bash
         run: |
           echo "Setting up credentials..."
-
-          # Set LT_USERNAME
           if [ -z "${{ github.event.inputs.username }}" ]; then
-            echo "LT_USERNAME=${{ secrets.LT_USERNAME }}" >> $GITHUB_ENV
+            export LT_USERNAME="${{ secrets.LT_USERNAME }}"
           else
-            echo "LT_USERNAME=${{ github.event.inputs.username }}" >> $GITHUB_ENV
+            export LT_USERNAME="${{ github.event.inputs.username }}"
           fi
 
-          # Set LT_ACCESS_KEY
           if [ -z "${{ github.event.inputs.accessKey }}" ]; then
-            echo "LT_ACCESS_KEY=${{ secrets.LT_ACCESS_KEY }}" >> $GITHUB_ENV
+            export LT_ACCESS_KEY="${{ secrets.LT_ACCESS_KEY }}"
           else
-            echo "LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}" >> $GITHUB_ENV
+            export LT_ACCESS_KEY="${{ github.event.inputs.accessKey }}"
           fi
 
-          echo "Credentials set and exported to GITHUB_ENV."
+          echo "Credentials set. (Username is masked for security)"
 
-      - name: Download the Project and CLI
+      - name: Download the CLI and Execute the Project
         shell: bash
         run: |
           echo "Step 1: Downloading the Sample Project"
@@ -57,11 +54,5 @@ jobs:
           wget -q https://downloads.lambdatest.com/hyperexecute/linux/hyperexecute
           chmod +x hyperexecute
 
-      - name: Execute the Project
-        shell: bash
-        run: |
           echo "Step 3: Execute the Test Suite"
-          cd hyperexecute-failfast
-          
-          # Use environment variables correctly
-          ./hyperexecute --user "$LT_USERNAME" --key "$LT_ACCESS_KEY" --config yaml/failfast.yaml
+          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
