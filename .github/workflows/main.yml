@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: ubuntu-latest
 
     steps:
       - name: Checkout sources
@@ -55,10 +55,10 @@ jobs:
           
           echo "Step 2: Download the HyperExecute CLI"
           cd hyperexecute-failfast
-          curl -o hyperexecute https://downloads.lambdatest.com/hyperexecute/linux/hyperexecute
+          wget -q https://downloads.lambdatest.com/hyperexecute/linux/hyperexecute
 
       - name: Execute the Project
         shell: bash
         run: |
           echo "Step 3: Execute the Test Suite"
-          hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
+          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
