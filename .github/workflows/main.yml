@@ -1,17 +1,21 @@
 name: HyperExecute-Failfast
+
 on:
+  schedule:
+    - cron: '30 2 * * 1'  # Runs every Monday at 8:00 AM IST
   workflow_dispatch:
     inputs:
       username:
-        required: true
-        description: LT Username
+        description: "LT Username (Overrides default secret)"
+        required: false
       accessKey:
-        description: LT Access Key
-        required: true
+        description: "LT Access Key (Overrides default secret)"
+        required: false
       sampleRepoLink:
-        description: Link to the HyperExecute sample repo
-        default: https://github.com/john190501/hyp-autosplit-2-failfast
+        description: "Link to the HyperExecute sample repo"
+        default: "https://github.com/john190501/hyp-autosplit-2-failfast"
         required: true
+
 jobs:
   HyperExecute-Selenium:
     runs-on: ${{ matrix.os }}
@@ -20,20 +24,41 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Execcuting the Project
+      - name: Set up Credentials
+        shell: bash
+        run: |
+          echo "Setting up credentials..."
+          if [ -z "${{ github.event.inputs.username }}" ]; then
+            export LT_USERNAME="${{ secrets.LT_USERNAME }}"
+          else
+            export LT_USERNAME="${{ github.event.inputs.username }}"
+          fi
+
+          if [ -z "${{ github.event.inputs.accessKey }}" ]; then
+            export LT_ACCESS_KEY="${{ secrets.LT_ACCESS_KEY }}"
+          else
+            export LT_ACCESS_KEY="${{ github.event.inputs.accessKey }}"
+          fi
+
+          echo "Credentials set. (Username is masked for security)"
+
+      - name: Download the Project and CLI
         shell: bash
         run: |
           echo "Step 1: Downloading the Sample Project"
           git clone ${{ github.event.inputs.sampleRepoLink }}
+          
           echo "Step 2: Download the HyperExecute CLI"
           cd hyp-autosplit-2-failfast
-          curl https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe -o hyperexecute.exe
-          echo "Step 3: Setting up the Credentials"
-          export LT_USERNAME=${{ github.event.inputs.username }}
-          export LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}
-          echo "Step 4: Execute the Test Suite"
-          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/v2/win-failfast.yaml
+          curl -o hyperexecute.exe https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
+
+      - name: Execute the Project
+        shell: bash
+        run: |
+          echo "Step 3: Execute the Test Suite"
+          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml

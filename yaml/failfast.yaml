@@ -3,7 +3,7 @@ version: 0.1
 runson: linux
 
 autosplit: true
-concurrency: 1
+concurrency: 2
 
 pre:
   - mvn dependency:resolve
@@ -21,4 +21,4 @@ maxRetries: 2
 failFast:
   maxNumberOfTests: 2
 
-jobLabel: ['HyperExecute - Failfast', 'v1', 'linux']
+jobLabel: [failfast]
