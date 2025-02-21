@@ -1,8 +1,8 @@
-name: HyperExecute-Scheduled-Run
+name: HyperExecute-Failfast
 
 on:
   schedule:
-    - cron: "23 20 * * *"  # Runs at 2:55 AM UTC (8:25 AM IST) every day
+    - cron: "00 7 * * 1"  # Runs at 12:30pm every Monday
   workflow_dispatch:
     inputs:
       username:
@@ -17,7 +17,7 @@ on:
         required: true
 
 jobs:
-  HyperExecute-Run:
+  HyperExecute-Failfast:
     runs-on: windows-latest
     timeout-minutes: 15
 
