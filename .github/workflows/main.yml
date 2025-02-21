@@ -2,7 +2,7 @@ name: HyperExecute-Failfast
 
 on:
   schedule:
-    - cron: "00 7 * * 1"  # Runs at 12:30pm every Monday
+    - cron: "00 7 * * 1"  # Runs at 12:30 PM IST every Monday
   workflow_dispatch:
     inputs:
       username:
@@ -39,10 +39,21 @@ jobs:
           fi
         shell: bash
 
+      - name: Set Repository Link
+        run: |
+          if [ -n "${{ github.event.inputs.sampleRepoLink }}" ]; then
+            echo "Using repository link from manual trigger"
+            echo "REPO_LINK=${{ github.event.inputs.sampleRepoLink }}" >> $GITHUB_ENV
+          else
+            echo "Using default repository link for scheduled runs"
+            echo "REPO_LINK=https://github.com/john190501/hyperexecute-failfast" >> $GITHUB_ENV
+          fi
+        shell: bash
+
       - name: Download Sample Project
         run: |
           echo "Cloning repository..."
-          git clone ${{ github.event.inputs.sampleRepoLink }}
+          git clone $REPO_LINK
         shell: bash
 
       - name: Install HyperExecute CLI
