@@ -2,7 +2,7 @@ name: HyperExecute-Scheduled-Run
 
 on:
   schedule:
-    - cron: "19 20 * * 0"  # Runs at 2:55 AM UTC (8:25 AM IST) every Monday
+    - cron: "23 20 * * *"  # Runs at 2:55 AM UTC (8:25 AM IST) every day
   workflow_dispatch:
     inputs:
       username:
