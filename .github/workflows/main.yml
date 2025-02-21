@@ -1,15 +1,15 @@
-name: HyperExecute-Failfast
+name: HyperExecute-Scheduled-Run
 
 on:
   schedule:
-    - cron: '30 2 * * 1'  # Runs every Monday at 8:00 AM IST
+    - cron: "55 2 * * 1"  # Runs at 2:55 AM UTC (8:25 AM IST) every Monday
   workflow_dispatch:
     inputs:
       username:
-        description: "LT Username (Overrides default secret)"
+        description: "LT Username (Optional)"
         required: false
       accessKey:
-        description: "LT Access Key (Overrides default secret)"
+        description: "LT Access Key (Optional)"
         required: false
       sampleRepoLink:
         description: "Link to the HyperExecute sample repo"
@@ -17,57 +17,43 @@ on:
         required: true
 
 jobs:
-  HyperExecute-Failfast:
-    runs-on: ubuntu-latest
+  HyperExecute-Run:
+    runs-on: windows-latest
     timeout-minutes: 15
 
     steps:
-      - name: Checkout sources
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Credentials
+      - name: Set Credentials
         run: |
           echo "Setting up credentials..."
-
-          # If the username input is provided, use it; otherwise, use the secret
-          if [ -z "${{ github.event.inputs.username }}" ]; then
-            echo "LT_USERNAME=${{ secrets.LT_USERNAME }}" >> $GITHUB_ENV
-          else
+          if [ -n "${{ github.event.inputs.username }}" ]; then
+            echo "Using provided credentials from input"
             echo "LT_USERNAME=${{ github.event.inputs.username }}" >> $GITHUB_ENV
-          fi
-
-          # If the accessKey input is provided, use it; otherwise, use the secret
-          if [ -z "${{ github.event.inputs.accessKey }}" ]; then
-            echo "LT_ACCESS_KEY=${{ secrets.LT_ACCESS_KEY }}" >> $GITHUB_ENV
-          else
             echo "LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}" >> $GITHUB_ENV
+          else
+            echo "Using credentials from Secrets"
+            echo "LT_USERNAME=${{ secrets.LT_USERNAME }}" >> $GITHUB_ENV
+            echo "LT_ACCESS_KEY=${{ secrets.LT_ACCESS_KEY }}" >> $GITHUB_ENV
           fi
+        shell: bash
 
-          echo "Environment variables set successfully."
-
-      - name: Verify Environment Variables
+      - name: Download Sample Project
         run: |
-          echo "Verifying credentials..."
-          if [ -z "$LT_USERNAME" ]; then
-            echo "❌ LT_USERNAME is not set!" && exit 1
-          fi
-          if [ -z "$LT_ACCESS_KEY" ]; then
-            echo "❌ LT_ACCESS_KEY is not set!" && exit 1
-          fi
-          echo "✅ Credentials verified successfully."
-
-      - name: Download the CLI and Execute the Project
-        env:
-          LT_USERNAME: ${{ env.LT_USERNAME }}
-          LT_ACCESS_KEY: ${{ env.LT_ACCESS_KEY }}
-        run: |
-          echo "Step 1: Downloading the Sample Project"
+          echo "Cloning repository..."
           git clone ${{ github.event.inputs.sampleRepoLink }}
+        shell: bash
 
-          echo "Step 2: Download the HyperExecute CLI"
-          cd hyperexecute-failfast
-          wget -q https://downloads.lambdatest.com/hyperexecute/linux/hyperexecute
-          chmod +x hyperexecute
+      - name: Install HyperExecute CLI
+        run: |
+          echo "Downloading HyperExecute CLI..."
+          cd hyp-autosplit-6-report-artifact-email
+          curl -O https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
+        shell: bash
 
-          echo "Step 3: Execute the Test Suite"
-          ./hyperexecute --user "$LT_USERNAME" --key "$LT_ACCESS_KEY" --config yaml/failfast.yaml
+      - name: Execute Test Suite
+        run: |
+          echo "Executing tests on HyperExecute..."
+          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/hyp-report-artifacts.yaml
+        shell: bash
