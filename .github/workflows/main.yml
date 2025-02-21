@@ -37,6 +37,7 @@ jobs:
             echo "Using credentials from Secrets"
             echo "LT_USERNAME=${{ secrets.LT_USERNAME }}" >> $GITHUB_ENV
             echo "LT_ACCESS_KEY=${{ secrets.LT_ACCESS_KEY }}" >> $GITHUB_ENV
+          pwd
           fi
         shell: bash
 
@@ -45,6 +46,7 @@ jobs:
           pwd
           echo "Cloning repository..."
           git clone ${{ github.event.inputs.sampleRepoLink }}
+          pwd
         shell: bash
 
       - name: Install HyperExecute CLI
@@ -53,11 +55,13 @@ jobs:
           echo "Downloading HyperExecute CLI..."
           cd hyperexecute-failfast
           curl -O https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
+          pwd
         shell: bash
 
       - name: Execute Test Suite
         run: |
           pwd
           echo "Executing tests on HyperExecute..."
-          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
+          hyperexecute.exe --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
+          pwd
         shell: bash
