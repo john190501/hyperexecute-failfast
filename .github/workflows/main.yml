@@ -2,7 +2,7 @@ name: HyperExecute-Failfast
 
 on:
   schedule:
-    - cron: "45 20 * * *"  # Runs at 12:30 PM IST every Monday
+    - cron: "45 20 * * *"  # Runs at 2:15 AM IST every day
   workflow_dispatch:
     inputs:
       username:
@@ -14,7 +14,7 @@ on:
       sampleRepoLink:
         description: "Link to the HyperExecute sample repo"
         default: "https://github.com/john190501/hyperexecute-failfast"
-        required: true
+        required: false
 
 jobs:
   HyperExecute-Failfast:
@@ -26,9 +26,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set Credentials
+        shell: bash
         run: |
           echo "Setting up credentials..."
-          if [ -n "${{ github.event.inputs.username }}" ]; then
+          
+          if [[ -n "${{ github.event.inputs.username }}" ]]; then
             echo "Using provided credentials from input"
             echo "LT_USERNAME=${{ github.event.inputs.username }}" >> $GITHUB_ENV
             echo "LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}" >> $GITHUB_ENV
@@ -37,33 +39,70 @@ jobs:
             echo "LT_USERNAME=${{ secrets.LT_USERNAME }}" >> $GITHUB_ENV
             echo "LT_ACCESS_KEY=${{ secrets.LT_ACCESS_KEY }}" >> $GITHUB_ENV
           fi
+
+      - name: Validate Credentials
         shell: bash
+        run: |
+          if [[ -z "$LT_USERNAME" || -z "$LT_ACCESS_KEY" ]]; then
+            echo "❌ ERROR: Missing LT_USERNAME or LT_ACCESS_KEY. Exiting..."
+            exit 1
+          else
+            echo "✅ Credentials successfully set."
+          fi
 
       - name: Set Repository Link
+        shell: bash
         run: |
-          if [ -n "${{ github.event.inputs.sampleRepoLink }}" ]; then
+          if [[ -n "${{ github.event.inputs.sampleRepoLink }}" ]]; then
             echo "Using repository link from manual trigger"
             echo "REPO_LINK=${{ github.event.inputs.sampleRepoLink }}" >> $GITHUB_ENV
           else
             echo "Using default repository link for scheduled runs"
             echo "REPO_LINK=https://github.com/john190501/hyperexecute-failfast" >> $GITHUB_ENV
           fi
+
+      - name: Validate Repository Link
         shell: bash
+        run: |
+          if [[ -z "$REPO_LINK" ]]; then
+            echo "❌ ERROR: Missing repository link. Exiting..."
+            exit 1
+          else
+            echo "✅ Repository link set: $REPO_LINK"
+          fi
 
       - name: Download Sample Project
+        shell: bash
         run: |
           echo "Cloning repository..."
-          git clone $REPO_LINK
-        shell: bash
+          git clone "$REPO_LINK"
+          if [[ $? -ne 0 ]]; then
+            echo "❌ ERROR: Failed to clone repository."
+            exit 1
+          fi
+          echo "✅ Repository cloned successfully."
 
       - name: Install HyperExecute CLI
+        shell: bash
         run: |
           echo "Downloading HyperExecute CLI..."
           curl -O https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
-        shell: bash
+          if [[ $? -ne 0 ]]; then
+            echo "❌ ERROR: Failed to download HyperExecute CLI."
+            exit 1
+          fi
+          echo "✅ HyperExecute CLI downloaded successfully."
 
       - name: Execute Test Suite
+        env:
+          LT_USERNAME: ${{ env.LT_USERNAME }}
+          LT_ACCESS_KEY: ${{ env.LT_ACCESS_KEY }}
+        shell: bash
         run: |
           echo "Executing tests on HyperExecute..."
           ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
-        shell: bash
+          if [[ $? -ne 0 ]]; then
+            echo "❌ ERROR: Test execution failed."
+            exit 1
+          fi
+          echo "✅ Tests executed successfully."
