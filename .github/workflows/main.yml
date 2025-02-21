@@ -48,12 +48,12 @@ jobs:
       - name: Install HyperExecute CLI
         run: |
           echo "Downloading HyperExecute CLI..."
-          cd hyp-autosplit-6-report-artifact-email
+          cd hyperexecute-failfast
           curl -O https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
         shell: bash
 
       - name: Execute Test Suite
         run: |
           echo "Executing tests on HyperExecute..."
-          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/hyp-report-artifacts.yaml
+          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
         shell: bash
