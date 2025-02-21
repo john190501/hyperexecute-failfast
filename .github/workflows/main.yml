@@ -27,6 +27,7 @@ jobs:
 
       - name: Set Credentials
         run: |
+          pwd
           echo "Setting up credentials..."
           if [ -n "${{ github.event.inputs.username }}" ]; then
             echo "Using provided credentials from input"
@@ -41,12 +42,14 @@ jobs:
 
       - name: Download Sample Project
         run: |
+          pwd
           echo "Cloning repository..."
           git clone ${{ github.event.inputs.sampleRepoLink }}
         shell: bash
 
       - name: Install HyperExecute CLI
         run: |
+          pwd
           echo "Downloading HyperExecute CLI..."
           cd hyperexecute-failfast
           curl -O https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
@@ -54,6 +57,7 @@ jobs:
 
       - name: Execute Test Suite
         run: |
+          pwd
           echo "Executing tests on HyperExecute..."
           ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
         shell: bash
