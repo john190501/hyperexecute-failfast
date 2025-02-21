@@ -53,7 +53,6 @@ jobs:
         run: |
           pwd
           echo "Downloading HyperExecute CLI..."
-          cd hyperexecute-failfast
           curl -O https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
           pwd
         shell: bash
@@ -62,6 +61,6 @@ jobs:
         run: |
           pwd
           echo "Executing tests on HyperExecute..."
-          hyperexecute.exe --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
+          ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
           pwd
         shell: bash
