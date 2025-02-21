@@ -2,7 +2,7 @@ name: HyperExecute-Failfast
 
 on:
   schedule:
-    - cron: "00 7 * * 1"  # Runs at 12:30 PM IST every Monday
+    - cron: "45 20 * * *"  # Runs at 12:30 PM IST every Monday
   workflow_dispatch:
     inputs:
       username:
