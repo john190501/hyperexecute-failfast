@@ -2,7 +2,7 @@ name: HyperExecute-Failfast
 
 on:
   schedule:
-    - cron: "44 9 * * *"  # Runs at 12:34 PM IST every Monday
+    - cron: "24 10 * * *"  # Runs at 3:13 PM IST every day
   workflow_dispatch:
     inputs:
       username:
@@ -34,19 +34,21 @@ jobs:
         run: |
           echo "Setting up credentials..."
 
+          # Ensure secrets are always set
           if [[ -n "${{ github.event.inputs.username }}" ]]; then
             echo "Using provided credentials from input"
             echo "LT_USERNAME=${{ github.event.inputs.username }}" >> $GITHUB_ENV
             echo "LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}" >> $GITHUB_ENV
           else
             echo "Using credentials from Secrets"
-            echo "LT_USERNAME=${LT_USERNAME}" >> $GITHUB_ENV
-            echo "LT_ACCESS_KEY=${LT_ACCESS_KEY}" >> $GITHUB_ENV
+            echo "LT_USERNAME=${{ secrets.LT_USERNAME }}" >> $GITHUB_ENV
+            echo "LT_ACCESS_KEY=${{ secrets.LT_ACCESS_KEY }}" >> $GITHUB_ENV
           fi
 
       - name: Validate Credentials
         shell: bash
         run: |
+          source $GITHUB_ENV  # Load variables
           if [[ -z "$LT_USERNAME" || -z "$LT_ACCESS_KEY" ]]; then
             echo "❌ ERROR: Missing LT_USERNAME or LT_ACCESS_KEY. Exiting..."
             exit 1
@@ -68,6 +70,7 @@ jobs:
       - name: Validate Repository Link
         shell: bash
         run: |
+          source $GITHUB_ENV  # Load variables
           if [[ -z "$REPO_LINK" ]]; then
             echo "❌ ERROR: Missing repository link. Exiting..."
             exit 1
@@ -78,6 +81,7 @@ jobs:
       - name: Download Sample Project
         shell: bash
         run: |
+          source $GITHUB_ENV  # Load variables
           echo "Cloning repository..."
           git clone "$REPO_LINK"
           if [[ $? -ne 0 ]]; then
@@ -98,11 +102,9 @@ jobs:
           echo "✅ HyperExecute CLI downloaded successfully."
 
       - name: Execute Test Suite
-        env:
-          LT_USERNAME: ${{ env.LT_USERNAME }}
-          LT_ACCESS_KEY: ${{ env.LT_ACCESS_KEY }}
         shell: bash
         run: |
+          source $GITHUB_ENV  # Load variables
           echo "Executing tests on HyperExecute..."
           ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY --config yaml/failfast.yaml
           if [[ $? -ne 0 ]]; then
