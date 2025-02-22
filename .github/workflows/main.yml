@@ -2,7 +2,7 @@ name: HyperExecute-Failfast
 
 on:
   schedule:
-    - cron: "00 7 * * 1"  # Runs at 7:00 AM UTC (12:30 PM IST) every Monday
+    - cron: "43 9 * * *"  # Runs at 12:34 PM IST every Monday
   workflow_dispatch:
     inputs:
       username:
@@ -21,6 +21,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 15
 
+    env:
+      LT_USERNAME: ${{ secrets.LT_USERNAME }}
+      LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -29,15 +33,15 @@ jobs:
         shell: bash
         run: |
           echo "Setting up credentials..."
-          
+
           if [[ -n "${{ github.event.inputs.username }}" ]]; then
             echo "Using provided credentials from input"
             echo "LT_USERNAME=${{ github.event.inputs.username }}" >> $GITHUB_ENV
             echo "LT_ACCESS_KEY=${{ github.event.inputs.accessKey }}" >> $GITHUB_ENV
           else
             echo "Using credentials from Secrets"
-            echo "LT_USERNAME=${{ secrets.LT_USERNAME }}" >> $GITHUB_ENV
-            echo "LT_ACCESS_KEY=${{ secrets.LT_ACCESS_KEY }}" >> $GITHUB_ENV
+            echo "LT_USERNAME=${LT_USERNAME}" >> $GITHUB_ENV
+            echo "LT_ACCESS_KEY=${LT_ACCESS_KEY}" >> $GITHUB_ENV
           fi
 
       - name: Validate Credentials
