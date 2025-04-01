@@ -8,6 +8,9 @@ concurrency: 2
 pre:
   - mvn dependency:resolve
 
+post:
+  - cat yaml/failfast.yaml
+
 testDiscovery:
   type: raw
   mode: dynamic
